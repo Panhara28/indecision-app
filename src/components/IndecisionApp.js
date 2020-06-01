@@ -4,23 +4,39 @@ import Action from './Action';
 import Header from './Header';
 import Options from './Options';
 import OptionModal from './OptionModal';
+import { gql } from 'apollo-boost';
+import { Query } from 'react-apollo';
+
+const GET_INDECISIONS = gql`
+  query indecisionList($limit: Int = 0, $offset: Int = 0) {
+    indecisionList(limit: $limit, offset: $offset){
+      title
+    }
+  }
+`;
+
 
 export default class IndecisionApp extends React.Component {
+
   state = {
     options: [],
     selectedOption: undefined
   };
+  
   handleDeleteOptions = () => {
     this.setState(() => ({ options: [] }));
   };
+
   handleClearSelectedOption = () => {
     this.setState(() => ({ selectedOption: undefined }));
   }
+
   handleDeleteOption = (optionToRemove) => {
     this.setState((prevState) => ({
       options: prevState.options.filter((option) => optionToRemove !== option)
     }));
   };
+
   handlePick = () => {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
     const option = this.state.options[randomNum];
@@ -28,6 +44,7 @@ export default class IndecisionApp extends React.Component {
       selectedOption: option
     }));
   };
+
   handleAddOption = (option) => {
     if (!option) {
       return 'Enter valid value to add item';
@@ -39,6 +56,7 @@ export default class IndecisionApp extends React.Component {
       options: prevState.options.concat(option)
     }));
   };
+
   componentDidMount() {
     try {
       const json = localStorage.getItem('options');
@@ -51,15 +69,18 @@ export default class IndecisionApp extends React.Component {
       // Do nothing at all
     }
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevState.options.length !== this.state.options.length) {
       const json = JSON.stringify(this.state.options);
       localStorage.setItem('options', json);
     }
   }
+
   componentWillUnmount() {
     console.log('componentWillUnmount');
   }
+
   render() {
     const subtitle = 'Put your life in the hands of a computer';
 
@@ -72,11 +93,27 @@ export default class IndecisionApp extends React.Component {
             handlePick={this.handlePick}
           />
           <div className="widget">
-            <Options
-              options={this.state.options}
-              handleDeleteOptions={this.handleDeleteOptions}
-              handleDeleteOption={this.handleDeleteOption}
-            />
+            <Query 
+              query={GET_INDECISIONS}
+              variables={{
+                limit: 10,
+                offset: 0
+              }}
+            >
+              {
+                ({ loading, data }) => {
+                  if(loading) return <div>Loading....</div>
+                  console.log(data.indecisionList);
+                  
+                  return <Options
+                    options={data.indecisionList}
+                    handleDeleteOptions={this.handleDeleteOptions}
+                    handleDeleteOption={this.handleDeleteOption}
+                  />
+                }
+              }
+            </Query>
+
             <AddOption
               handleAddOption={this.handleAddOption}
             />
