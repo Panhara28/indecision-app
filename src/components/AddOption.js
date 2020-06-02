@@ -17,9 +17,11 @@ export default class AddOption extends React.Component {
   handleAddOption = (e, update) => {
     e.preventDefault();
     const option = e.target.elements.option.value.trim();
+
     const data = {
       title: option
     }
+
     const error = this.props.handleAddOption(option);
 
     this.setState(() => ({ error }));
@@ -27,12 +29,17 @@ export default class AddOption extends React.Component {
     if (!error) {
       e.target.elements.option.value = '';
     }
-
-    update({
-      variables: {
-        data
-      }
-    })
+    
+    if(data.title === ''){
+      e.target.elements.option.value = '';
+    }else{
+      update({
+        variables: {
+          data
+        }
+      })
+      e.target.elements.option.value = '';
+    }
   };
 
   render() {

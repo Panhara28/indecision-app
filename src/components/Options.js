@@ -21,8 +21,9 @@ const Options = (props) => {
           <Option
             key={option}
             optionText={option.title}
+            optionId={option.id}
             count={index + 1}
-            handleDeleteOption={props.handleDeleteOption}
+            handleDeleteOption={() => props.handleDeleteOption(option.id)}
           />
         ))
       }

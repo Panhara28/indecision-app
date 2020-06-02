@@ -10,11 +10,11 @@ import { Query } from 'react-apollo';
 const GET_INDECISIONS = gql`
   query indecisionList($limit: Int = 0, $offset: Int = 0) {
     indecisionList(limit: $limit, offset: $offset){
+      id
       title
     }
   }
 `;
-
 
 export default class IndecisionApp extends React.Component {
 
@@ -31,55 +31,32 @@ export default class IndecisionApp extends React.Component {
     this.setState(() => ({ selectedOption: undefined }));
   }
 
-  handleDeleteOption = (optionToRemove) => {
-    this.setState((prevState) => ({
-      options: prevState.options.filter((option) => optionToRemove !== option)
-    }));
-  };
 
   handlePick = () => {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
     const option = this.state.options[randomNum];
     this.setState(() => ({
-      selectedOption: option
+      selectedOption: option.title
     }));
   };
 
   handleAddOption = (option) => {
+    let err = undefined;
+
     if (!option) {
       return 'Enter valid value to add item';
-    } else if (this.state.options.indexOf(option) > -1) {
-      return 'This option already exists';
+    }else{
+      this.state.options.map(x => {
+        if(x.title === option){
+          err = 'This option already exists'; 
+        }
+      })
+      return err;
     }
 
-    this.setState((prevState) => ({
-      options: prevState.options.concat(option)
-    }));
+
+
   };
-
-  componentDidMount() {
-    try {
-      const json = localStorage.getItem('options');
-      const options = JSON.parse(json);
-
-      if (options) {
-        this.setState(() => ({ options }));
-      }
-    } catch (e) {
-      // Do nothing at all
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.options.length !== this.state.options.length) {
-      const json = JSON.stringify(this.state.options);
-      localStorage.setItem('options', json);
-    }
-  }
-
-  componentWillUnmount() {
-    console.log('componentWillUnmount');
-  }
 
   render() {
     const subtitle = 'Put your life in the hands of a computer';
@@ -95,6 +72,7 @@ export default class IndecisionApp extends React.Component {
           <div className="widget">
             <Query 
               query={GET_INDECISIONS}
+              onCompleted={(data) => this.setState({ options: data.indecisionList })}
               variables={{
                 limit: 10,
                 offset: 0
@@ -102,13 +80,10 @@ export default class IndecisionApp extends React.Component {
             >
               {
                 ({ loading, data }) => {
-                  if(loading) return <div>Loading....</div>
-                  console.log(data.indecisionList);
-                  
+                  if(loading) return <div>Loading....</div>                  
                   return <Options
                     options={data.indecisionList}
                     handleDeleteOptions={this.handleDeleteOptions}
-                    handleDeleteOption={this.handleDeleteOption}
                   />
                 }
               }
