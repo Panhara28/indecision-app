@@ -42,6 +42,14 @@ export default class AddOption extends React.Component {
     }
   };
 
+  renderAddOption = (update) => {
+    return (
+    <form className="add-option" onSubmit={(e) => this.handleAddOption(e, update)}>
+      <input className="add-option__input" type="text" name="option" />
+      <button className="button">Add Option</button>
+    </form>)
+  }
+
   render() {
     return (
       <div>
@@ -51,13 +59,7 @@ export default class AddOption extends React.Component {
           refetchQueries={["indecisionList"]}
         >
           {
-            (update) => {
-              return (
-              <form className="add-option" onSubmit={(e) => this.handleAddOption(e, update)}>
-                <input className="add-option__input" type="text" name="option" />
-                <button className="button">Add Option</button>
-              </form>)
-            }
+            this.renderAddOption
           }
         </Mutation>
 

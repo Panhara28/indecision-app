@@ -31,7 +31,6 @@ export default class IndecisionApp extends React.Component {
     this.setState(() => ({ selectedOption: undefined }));
   }
 
-
   handlePick = () => {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
     const option = this.state.options[randomNum];
@@ -42,7 +41,6 @@ export default class IndecisionApp extends React.Component {
 
   handleAddOption = (option) => {
     let err = undefined;
-
     if (!option) {
       return 'Enter valid value to add item';
     }else{
@@ -53,10 +51,15 @@ export default class IndecisionApp extends React.Component {
       })
       return err;
     }
-
-
-
   };
+
+  renderOptions = ({ loading, data }) => {
+    if(loading) return <div>Loading....</div>                  
+    return <Options
+      options={data.indecisionList}
+      handleDeleteOptions={this.handleDeleteOptions}
+    />
+  }
 
   render() {
     const subtitle = 'Put your life in the hands of a computer';
@@ -79,13 +82,7 @@ export default class IndecisionApp extends React.Component {
               }}
             >
               {
-                ({ loading, data }) => {
-                  if(loading) return <div>Loading....</div>                  
-                  return <Options
-                    options={data.indecisionList}
-                    handleDeleteOptions={this.handleDeleteOptions}
-                  />
-                }
+                this.renderOptions
               }
             </Query>
 
