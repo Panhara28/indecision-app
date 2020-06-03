@@ -21,6 +21,7 @@ const Option = (props) => {
            return <button
             className="button button--link"
               onClick={() => {
+                props.handleDeleteOption(props.optionId);
                 update({
                   variables: {
                     id: Number(props.optionId)

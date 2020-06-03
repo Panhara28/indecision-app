@@ -11,11 +11,17 @@ const CREATE_INDECISION = gql`
 export default class AddOption extends React.Component {
 
   state = {
-    error: undefined
+    error: undefined,
+    title: ''
   };
 
   handleAddOption = (e, update) => {
     e.preventDefault();
+
+    this.setState({
+      title: e.target.elements.option.value.trim()
+    })
+    
     const option = e.target.elements.option.value.trim();
 
     const data = {
@@ -50,13 +56,20 @@ export default class AddOption extends React.Component {
     </form>)
   }
 
-  render() {
+  render() {    
+
     return (
       <div>
         {this.state.error && <p className="add-option-error">{this.state.error}</p>}
         <Mutation 
           mutation={CREATE_INDECISION}
           refetchQueries={["indecisionList"]}
+          onCompleted={data => {
+            this.props.onCompletedCreate({
+              id: data.createIndecision,
+              title: this.state.title
+            });
+          }}
         >
           {
             this.renderAddOption

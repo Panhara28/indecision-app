@@ -21,10 +21,12 @@ const Options = (props) => {
         >
           {
             (update) => {
+
               return(
                 <button
                   className="button button--link"
                   onClick={() => {
+                    props.handleDeleteOptions()
                     update({
                       option: "all"
                     })
@@ -43,7 +45,7 @@ const Options = (props) => {
       {
         props.options.map((option, index) => (
           <Option
-            key={option}
+            key={option.id}
             optionText={option.title}
             optionId={option.id}
             count={index + 1}
