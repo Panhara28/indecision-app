@@ -13,7 +13,7 @@
     "react-scripts": "3.4.1",
     "sass-loader": "6.0.6",
     "style-loader": "0.18.2",
-    "validator": "8.0.0"
+    "validator": "13.7.0"
   },
   "scripts": {
     "start": "PORT=4000 react-scripts start",
